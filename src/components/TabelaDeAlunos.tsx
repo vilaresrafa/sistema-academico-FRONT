@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 
 interface Props {
   alunos: Aluno[];
+  tratarRemocao: (id: number) => void;
 }
 
-const TabelaDeAlunos = ({ alunos }: Props) => {
+const TabelaDeAlunos = ({ alunos, tratarRemocao }: Props) => {
   // console.log(produtos);
   return (
     <div className="table-responsive">
@@ -22,9 +23,24 @@ const TabelaDeAlunos = ({ alunos }: Props) => {
             <tr key={aluno.id}>
               <td className="text-center align-middle">{aluno.id}</td>
               <td className="align-middle ps-3">
-                <Link className="fw-bold" style={{textDecoration: "none", color: "#46860bfa"}} to={"/alunos/" + aluno.id}>{aluno.nome}</Link> 
+                <Link
+                  className="fw-bold"
+                  style={{ textDecoration: "none", color: "#46860bfa" }}
+                  to={"/alunos/" + aluno.id}
+                >
+                  {aluno.nome}
+                </Link>
               </td>
               <td className="text-center align-middle">{aluno.email}</td>
+              <td width="13%" className="text-center align-middle">
+                <button
+                  onClick={() => tratarRemocao(aluno.id)}
+                  type="button"
+                  className="btn btn-sm btn-danger"
+                >
+                  Remover
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

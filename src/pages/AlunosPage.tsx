@@ -16,7 +16,9 @@ const AlunosPage = () => {
       <h5>Lista de Alunos</h5>
       <hr className="mt-1" />
 
-      <TabelaDeAlunos alunos={alunos} />
+      <TabelaDeAlunos alunos={alunos} tratarRemocao={function (id: number): void {
+        throw new Error("Function not implemented.");
+      } } />
     </>
   );
 };

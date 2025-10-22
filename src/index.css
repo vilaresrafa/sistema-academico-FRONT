@@ -1,0 +1,57 @@
+a:hover {
+    cursor: pointer;
+}
+
+/* CSS para o prjeto 8 */
+/* Ao colocar o mouse sobre algo na barra de paginação */
+.page-link {
+  --bs-pagination-hover-color: green;
+}
+
+/* Cor do 1, 2 e 3 iluminado */
+.pagination {
+  --bs-pagination-active-bg: green;
+  --bs-pagination-active-border-color: green;
+}
+
+/* Cor de tudo qdo não iluminado */
+a.page-link {
+  color: green;
+}
+
+/* CSS para o prjeto 9 */
+/* Para alterar a cor da borda das caixas de texto do bootstrap */
+.form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid rgb(163, 160, 160) !important;
+}
+
+/* CSS do projeto 13 */
+
+/* Procura por um elemento <nav> que possua a classe nav e depois aplica a regra para qq elemento 
+com a classe nav-link que seja descendente (qq nível) do elemento <nav> */
+
+nav.nav .nav-link.active {
+  background-color: green;
+}
+
+nav.nav .nav-link {
+  color: black;
+}
+
+nav.nav .nav-link:hover {
+  color: green;
+}
+
+nav.nav .nav-link.active:hover {
+  color: white;
+}
+
+/* CSS para o projeto 14 */
+
+button.btn.btn-secondary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}     
+

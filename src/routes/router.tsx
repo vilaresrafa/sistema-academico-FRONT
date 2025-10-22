@@ -3,8 +3,11 @@ import HomePage from "../pages/HomePage";
 import Layout from "./Layout";
 import ErrorPage from "../pages/ErrorPage";
 import TurmasPage from "../pages/TurmasPage";
-import AlunosPage from "../pages/AlunosPage";
 import TurmaPage from "../pages/TurmaPage";
+import CardsPorSlugTurma from "../components/CardsPorSlugTurma";
+import AlunosComPaginacaoPage from "../pages/AlunosComPaginacaoPage";
+import CardsPorSlugCategoriaPage from "../pages/CardsPorSlugDaTurmaPage";
+import CardsPorSlugDaTurmaPage from "../pages/CardsPorSlugDaTurmaPage";
 
 const router = createBrowserRouter([
   {
@@ -12,9 +15,15 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
-      { path: "", element: <HomePage /> },
+      {
+        path: "", 
+        element: <HomePage />,
+        children: [
+            {path: ":slugTurma?", element: <CardsPorSlugDaTurmaPage />}
+        ]
+      },
       { path: "listar-turmas", element: <TurmasPage /> },
-      { path: "listar-alunos", element: <AlunosPage />},
+      { path: "listar-alunos", element: <AlunosComPaginacaoPage />},
       { path: "turmas/:id", element: <TurmaPage /> },
     ],
   },
