@@ -13,7 +13,7 @@ const Pesquisa = ({ tratarPesquisa }: { tratarPesquisa: (nome: string) => void; 
 
   return (
     <input
-      placeholder="Pesquisa: informe o nome da aluno"
+      placeholder="Pesquisa: informe o nome da turma"
       onChange={handleChange}
       type="text"
       className="form-control form-control-sm mb-3"

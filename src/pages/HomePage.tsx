@@ -1,10 +1,14 @@
-import { NavLink, Outlet } from "react-router-dom";
+
 import Pesquisa from "../components/Pesquisa";
 import { useState } from "react";
 import useRecuperarTurmas from "../hooks/useRecuperarTurmas";
+import { NavLink, Outlet, useParams } from "react-router-dom";
+
 
 const HomePage = () => {
   const [nome, setNome] = useState("");
+  const params = useParams();
+const turmaSelecionada = Object.values(params)[0];
 
   const tratarPesquisa = (texto: string) => {
     setNome(texto);
@@ -27,24 +31,36 @@ const HomePage = () => {
         {error && <p className="text-danger">Erro ao carregar turmas.</p>}
 
         <nav className="nav nav-pills d-flex flex-column">
-          {turmas?.length ? (
-            turmas.map((turma: any) => (
-              <NavLink
-                key={turma.nome}
-                className="nav-link"
-                to={`/${turma.slug}`}
-              >
-                {turma.nome}
-              </NavLink>
-            ))
+          {nome.trim() !== "" ? (
+            isPending ? (
+              <p>Carregando turmas...</p>
+            ) : error ? (
+              <p className="text-danger">Erro ao carregar turmas.</p>
+            ) : turmas?.length ? (
+              turmas.map((turma: any) => (
+                <NavLink
+                  key={turma.nome}
+                  className="nav-link"
+                  to={`/${turma.slug}`}
+                >
+                  {turma.nome}
+                </NavLink>
+              ))
+            ) : (
+              <p>Nenhuma turma encontrada</p>
+            )
           ) : (
-            !isPending && <p>Nenhuma turma encontrada</p>
+            <p className="text-muted">Digite algo para buscar turmas</p>
           )}
         </nav>
       </div>
 
       <div className="col-lg-10">
-        <Outlet />
+        {turmaSelecionada ? (
+          <Outlet />
+         ) : (
+          <p className="text-muted">Selecione uma turma para visualizar os alunos</p>
+        )}
       </div>
     </div>
   );
