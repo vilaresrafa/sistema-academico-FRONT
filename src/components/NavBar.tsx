@@ -38,6 +38,12 @@ const NavBar = () => {
                 Alunos
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/grupos">
+                <i className="bi me-1"></i>
+                Grupos
+              </NavLink>
+            </li>
           </ul>
         </div>
       </div>
