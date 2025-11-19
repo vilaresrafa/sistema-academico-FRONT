@@ -44,6 +44,12 @@ const NavBar = () => {
                 Grupos
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/inscricao-alunos">
+                <i className="bi me-1"></i>
+                Inscrição
+              </NavLink>
+            </li>
           </ul>
         </div>
       </div>

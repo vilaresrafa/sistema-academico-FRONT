@@ -9,6 +9,7 @@ import AlunosComPaginacaoPage from "../pages/AlunosComPaginacaoPage";
 import CardsPorSlugCategoriaPage from "../pages/CardsPorSlugDaTurmaPage";
 import CardsPorSlugDaTurmaPage from "../pages/CardsPorSlugDaTurmaPage";
 import GrupoPage from "../pages/GrupoPage";
+import CadastrarAlunoPage from "../pages/CadastrarAlunosPage";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       { path: "listar-turmas", element: <TurmasPage /> },
       { path: "listar-alunos", element: <AlunosComPaginacaoPage />},
       { path: "grupos", element: <GrupoPage/>},
+      { path: "inscricao-alunos", element: <CadastrarAlunoPage />},
       { path: "turmas/:id", element: <TurmaPage /> },
     ],
   },
