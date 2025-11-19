@@ -25,7 +25,8 @@ const AlunoForm = () => {
 
   const navigate = useNavigate();
   const { register, handleSubmit, reset, setValue } = useForm<FormAluno>();
-  const { mutate: cadastrarAluno, error: errorCadastrarAluno } = useCadastrarAluno();
+  const { mutate: cadastrarAluno, error: errorCadastrarAluno } =
+    useCadastrarAluno();
 
   const inicializaForm = () => {
     if (alunoSelecionado.id) {
@@ -41,12 +42,7 @@ const AlunoForm = () => {
     inicializaForm();
   }, [alunoSelecionado]);
 
-  const submit = ({
-    id,
-    nome,
-    email,
-    turma,
-  }: FormAluno) => {
+  const submit = ({ id, nome, email, turma }: FormAluno) => {
     const aluno: Aluno = {
       nome: nome,
       email: email,
@@ -55,21 +51,21 @@ const AlunoForm = () => {
         strict: true,
       }),
       turma: { id: +turma } as Turma,
-      id: id
+      id: id,
     };
     if (alunoSelecionado.id) {
-      aluno.id = alunoSelecionado.id;  
+      aluno.id = alunoSelecionado.id;
       cadastrarAluno(aluno, {
         onSuccess: (alunoCadastrado: Aluno) => {
           setMensagem("Aluno cadastrado com sucesso!");
           navigate("/alunos/" + alunoCadastrado.id);
-        }
-      })
+        },
+      });
     }
   };
 
   if (errorCadastrarAluno) throw errorCadastrarAluno;
-  
+
   return (
     <form onSubmit={handleSubmit(submit)} autoComplete="off">
       <div className="row">
@@ -88,8 +84,18 @@ const AlunoForm = () => {
             <label htmlFor="email" className="col-xl-3 fw-bold">
               Alunos
             </label>
+
             <div className="col-xl-9">
               <AlunoComboBox />
+
+              {/* Botão de inscrever */}
+              <button
+                type="button"
+                className="btn btn-success btn-sm mt-2 d-flex align-items-center"
+                onClick={() => console.log("INSCRITO!")}
+              >
+                Inscrever
+              </button>
             </div>
           </div>
         </div>
@@ -103,36 +109,6 @@ const AlunoForm = () => {
             </label>
             <div className="col-xl-10">
               <TurmaComboBox />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="row mb-5">
-        <div className="col-xl-6">
-          <div className="row">
-            <div className="col-xl-10 offset-xl-2 d-flex">
-              <button
-                type="submit"
-                className="btn btn-success btn-sm d-flex align-items-center me-3"
-              >
-                {alunoSelecionado.id ? (
-                  <>
-                    Alterar
-                  </>
-                ) : (
-                  <>
-                    Cadastrar
-                  </>
-                )}
-              </button>
-              <button
-                onClick={() => inicializaForm()}
-                type="button"
-                className="btn btn-secondary btn-sm d-flex align-items-center"
-              >
-                Cancelar
-              </button>
             </div>
           </div>
         </div>
