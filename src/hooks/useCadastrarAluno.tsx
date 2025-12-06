@@ -1,36 +1,23 @@
-import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "../main";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Aluno } from "../interfaces/Aluno";
-
-const cadastrarAluno = async (aluno: Aluno) => {
-  const response = await fetch("http://localhost:8080/alunos", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      nome: aluno.nome,
-      slug: aluno.slug,
-      email: aluno.email,
-      // ❗ NÃO ENVIE TURMA AQUI
-      // turma: null
-      // turma: {}
-      // turma: aluno.turma
-    }),
-  });
-
-  if (!response.ok) {
-    const erro = await response.text();
-    console.error("Erro ao cadastrar aluno:", erro);
-    throw new Error("Falha ao cadastrar aluno");
-  }
-
-  return response.json();
-};
+import useApi from "./useApi";
 
 const useCadastrarAluno = () => {
+  const api = useApi();
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: cadastrarAluno,
+    mutationFn: (aluno: Aluno) => {
+      const body: any = {
+        nome: aluno.nome,
+        slug: aluno.slug,
+        email: aluno.email,
+      };
+      if (aluno.turma && (aluno.turma as any).id) {
+        body.turma = { id: (aluno.turma as any).id };
+      }
+      return api.post("/alunos", body).then((response) => response.data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["alunos"],

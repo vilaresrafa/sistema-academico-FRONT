@@ -1,17 +1,16 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { ResultadoPaginado } from "../interfaces/ResultadoPaginado";
 import type { Aluno } from "../interfaces/Aluno";
+import useApi from "./useApi";
 
-const recuperarAlunosComPaginacao = async (queryString: QueryString): Promise<ResultadoPaginado<Aluno>> => {
-  
-  const response = await fetch(
-    "http://localhost:8080/alunos/paginacao?" + new URLSearchParams({...queryString}));
-  if (!response.ok) {
-    throw new Error(
-      "Ocorreu um erro ao recuperar alunos com paginação. Status code: " + response.status
-    );
-  }
-  return await response.json();
+const recuperarAlunosComPaginacao = async (
+  queryString: QueryString,
+  api: any
+): Promise<ResultadoPaginado<Aluno>> => {
+  const response = await api.get("/alunos/paginacao", {
+    params: { ...queryString },
+  });
+  return response.data as ResultadoPaginado<Aluno>;
 };
 
 interface QueryString {
@@ -20,10 +19,11 @@ interface QueryString {
   nome: string;
 }
 const useRecuperarAlunosComPaginacao = (queryString: QueryString) => {
+  const api = useApi();
   return useQuery({
     queryKey: ["alunos", "paginacao", queryString],
-    queryFn: () => recuperarAlunosComPaginacao(queryString),
-    placeholderData: keepPreviousData
+    queryFn: () => recuperarAlunosComPaginacao(queryString, api),
+    placeholderData: keepPreviousData,
   });
 };
 export default useRecuperarAlunosComPaginacao;

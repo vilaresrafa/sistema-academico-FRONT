@@ -1,23 +1,14 @@
-// src/hooks/useAtualizarAluno.ts
-import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "../main";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Aluno } from "../interfaces/Aluno";
-
-const atualizarAlunoApi = async (aluno: Aluno) => {
-  const response = await fetch(`http://localhost:8080/alunos/${aluno.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(aluno),
-  });
-  if (!response.ok) {
-    throw new Error("Erro ao atualizar aluno. Status code: " + response.status);
-  }
-  return response.json();
-};
+import useApi from "./useApi";
 
 const useAtualizarAluno = () => {
+  const api = useApi();
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (aluno: Aluno) => atualizarAlunoApi(aluno),
+    mutationFn: (aluno: Aluno) =>
+      api.put(`/alunos/${aluno.id}`, aluno).then((response) => response.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alunos"], exact: false });
     },

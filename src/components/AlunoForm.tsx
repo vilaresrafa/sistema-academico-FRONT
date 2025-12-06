@@ -8,6 +8,8 @@ import useCadastrarAluno from "../hooks/useCadastrarAluno";
 import useAtualizarAluno from "../hooks/useAtualizarAluno";
 import useAlunoStore from "../store/AlunoStore";
 import { alunoSchema, type AlunoFormValues } from "../util/alunoSchema";
+import useRecuperarTurmas from "../hooks/useRecuperarTurmas";
+import { useState } from "react";
 
 const AlunoForm: React.FC = () => {
   const alunoSelecionado = useAlunoStore((s) => s.alunoSelecionado);
@@ -20,9 +22,10 @@ const AlunoForm: React.FC = () => {
     handleSubmit,
     reset,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<AlunoFormValues>({
     resolver: zodResolver(alunoSchema),
+    mode: "onChange",
     defaultValues: {
       nome: "",
       email: "",
@@ -31,6 +34,10 @@ const AlunoForm: React.FC = () => {
 
   const cadastrarMutation = useCadastrarAluno();
   const atualizarMutation = useAtualizarAluno();
+  const { data: turmas = [] } = useRecuperarTurmas({ nome: "" });
+  const [selectedTurmaId, setSelectedTurmaId] = useState<number | null>(
+    alunoSelecionado?.turma?.id ?? null
+  );
 
   // 🔥 Corrigido: alunoSelecionado pode ser null
   useEffect(() => {
@@ -43,13 +50,18 @@ const AlunoForm: React.FC = () => {
   }, [alunoSelecionado, setValue, reset]);
 
   const onSubmit = (data: AlunoFormValues) => {
+    console.log("AlunoForm submit", data);
     const aluno: Aluno = {
       id: alunoSelecionado?.id ?? 0,
       nome: data.nome,
       email: data.email,
       slug: slugify(data.nome, { lower: true, strict: true }),
-      turma: undefined as any,
+      turma: selectedTurmaId
+        ? ({ id: selectedTurmaId } as any)
+        : alunoSelecionado?.turma ?? ({} as any),
     };
+    console.log("selectedTurmaId", selectedTurmaId);
+    console.log("payload aluno", aluno);
 
     if (alunoSelecionado?.id) {
       atualizarMutation.mutate(aluno, {
@@ -64,15 +76,45 @@ const AlunoForm: React.FC = () => {
           setMensagem("Aluno cadastrado com sucesso!");
           navigate("/listar-alunos");
         },
+        onError: (err: any) => {
+          console.error("Cadastrar aluno erro:", err);
+          const serverMsg =
+            err?.response?.data || err?.message || JSON.stringify(err);
+          alert(
+            "Erro ao cadastrar aluno: " +
+              (serverMsg?.message || JSON.stringify(serverMsg))
+          );
+        },
       });
     }
   };
 
   console.log("ERRORS:", errors);
-
+  const cadastrarBusy =
+    (cadastrarMutation as any)?.isPending ||
+    (cadastrarMutation as any)?.isLoading;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
+      <div className="row mb-2">
+        <label className="col-xl-2 fw-bold">Turma</label>
+        <div className="col-xl-10">
+          <select
+            className="form-select form-select-sm"
+            value={selectedTurmaId ?? ""}
+            onChange={(e) =>
+              setSelectedTurmaId(e.target.value ? Number(e.target.value) : null)
+            }
+          >
+            <option value="">-- Selecionar turma (opcional) --</option>
+            {turmas.map((t: any) => (
+              <option key={t.id} value={t.id}>
+                {t.nome} — {t.ano} {t.periodo}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <div className="row mb-2">
         <label className="col-xl-2 fw-bold">Nome</label>
@@ -105,6 +147,7 @@ const AlunoForm: React.FC = () => {
           <button
             type="submit"
             className="btn btn-success btn-sm d-flex align-items-center me-3"
+            disabled={!isValid || cadastrarBusy}
           >
             {alunoSelecionado?.id ? "Alterar" : "Cadastrar"}
           </button>
@@ -118,7 +161,6 @@ const AlunoForm: React.FC = () => {
           </button>
         </div>
       </div>
-
     </form>
   );
 };

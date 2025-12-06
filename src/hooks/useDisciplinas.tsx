@@ -1,12 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { endpoints } from "../util/api";
+import useApi from "./useApi";
 import type { Disciplina } from "../interfaces/Disciplina";
 
-const fetchDisciplinas = async (): Promise<Disciplina[]> => {
-  const r = await fetch(endpoints.disciplinas);
-  if (!r.ok) throw new Error("Erro ao carregar disciplinas");
-  return r.json();
+export const useDisciplinas = () => {
+  const api = useApi();
+  return useQuery<Disciplina[]>({
+    queryKey: ["disciplinas"],
+    queryFn: async () => {
+      const res = await api.get("/disciplinas");
+      return res.data as Disciplina[];
+    },
+    staleTime: 10_000,
+  });
 };
 
-export const useDisciplinas = () =>
-  useQuery<Disciplina[]>({ queryKey: ["disciplinas"], queryFn: fetchDisciplinas, staleTime: 10_000 });
+export default useDisciplinas;
