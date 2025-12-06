@@ -93,7 +93,12 @@ const useAuthStore = create<AuthState>()(
 
           const basicUser: User = {
             nome:
-              decoded?.nome || decoded?.name || decoded?.given_name || decoded?.sub || decoded?.email || "",
+              decoded?.nome ||
+              decoded?.name ||
+              decoded?.given_name ||
+              decoded?.sub ||
+              decoded?.email ||
+              "",
             roles: tokenRoles,
           };
 
@@ -212,7 +217,12 @@ if (typeof window !== "undefined") {
           } catch {}
           const basicUser: User = {
             nome:
-              decoded?.nome || decoded?.name || decoded?.given_name || decoded?.sub || decoded?.email || "",
+              decoded?.nome ||
+              decoded?.name ||
+              decoded?.given_name ||
+              decoded?.sub ||
+              decoded?.email ||
+              "",
             roles: [],
           };
           useAuthStore.setState({
@@ -295,7 +305,12 @@ if (typeof window !== "undefined") {
           }
           const user: User = {
             nome:
-              decoded?.nome || decoded?.name || decoded?.given_name || decoded?.sub || decoded?.email || "",
+              decoded?.nome ||
+              decoded?.name ||
+              decoded?.given_name ||
+              decoded?.sub ||
+              decoded?.email ||
+              "",
             roles,
           };
           useAuthStore.setState({ token, user, isAuthenticated: true });
