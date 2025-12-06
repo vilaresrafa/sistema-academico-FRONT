@@ -1,10 +1,12 @@
+import type { Disciplina } from "./Disciplina";
 import type { Professor } from "./Professor";
 
 export interface Turma {
   id: number;
   nome: string;
-  slug: string;
   ano: number;
-  periodo: number;
-  professor: Professor;
+  periodo: string;
+  slug?: string;
+  professor?: Professor;
+  disciplina?: Disciplina;
 }

@@ -27,7 +27,7 @@ const TabelaDeTurma = ({ turmas }: Props) => {
               </td>
               <td className="text-center align-middle">{turma.ano}</td>
               <td className="text-center align-middle">{turma.periodo}</td>
-              <td className="text-center align-middle">{turma.professor.nome}</td>
+              <td className="text-center align-middle">{turma.professor?.nome}</td>
             </tr>
           ))}
         </tbody>

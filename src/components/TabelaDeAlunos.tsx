@@ -7,7 +7,6 @@ interface Props {
 }
 
 const TabelaDeAlunos = ({ alunos, tratarRemocao }: Props) => {
-  // console.log(produtos);
   return (
     <div className="table-responsive">
       <table className="table table-bordered table-striped table-hover table-sm">

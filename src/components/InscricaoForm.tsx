@@ -1,98 +1,63 @@
-import { useForm } from "react-hook-form";
-import useUsuarioStore from "../store/InscricaoStore";
-import type { TokenResponse } from "../interfaces/TokenResponse";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import useEfetuarInscricao from "../hooks/useEfetuarInscricao";
+import React from "react";
+import DisciplinaComboBox from "./DisciplinaComboBox";
+import TurmaComboBox from "./TurmaComboBox";
+import AlunoComboBox from "./AlunoComboBox";
+import TabelaDeAlunosPorTurma from "./TabelaDeAlunosPorTurma";
+import { useInscricaoStore } from "../store/InscricaoStore";
+import { useCriarInscricao } from "../hooks/useCriarInscricao";
 
-interface FormInscricao {
-  conta: string;
-  senha: string;
-}
+export default function InscricaoForm() {
+  const disciplinaId = useInscricaoStore(s => s.disciplinaId);
+  const turmaId = useInscricaoStore(s => s.turmaId);
+  const alunoId = useInscricaoStore(s => s.alunoId);
+  const setAlunoId = useInscricaoStore(s => s.setAlunoId);
+  const setFiltro = useInscricaoStore(s => s.setFiltro);
 
-const InscricaoForm = () => {
-  const setUsuarioLogado = useUsuarioStore((s) => s.setUsuarioLogado);
-  const [inscricaoInvalido, setInscricaoInvalido] = useState(false);
+  const { mutate: criar, isPending } = useCriarInscricao();
 
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    setUsuarioLogado(0);
-  }, []);
-
-  const { register, handleSubmit } = useForm<FormInscricao>();
-  const { mutate: efetuarInscricao, error: errorEfetuarInscricao } =
-    useEfetuarInscricao();
-  console.log(register("conta"));
-
-  const submit = ({ conta, senha }: FormInscricao) => {
-    const usuario: Usuario = { conta, senha };
-    efetuarInscricao(usuario, {
-      onSuccess: (tokenResponse: TokenResponse) => {
-        if (tokenResponse.token) {
-          setUsuarioLogado(tokenResponse.token);
-          if (location.state?.destino) {
-            navigate(location.state.destino);
-          } else {
-            navigate("/");
-          }
-        } else {
-          setInscricaoInvalido(true);
-        }
+  const handleInscrever = () => {
+    if (!turmaId || !alunoId) return alert("Selecione turma e aluno");
+    const payload = {
+      dataHora: new Date().toISOString(),
+      aluno: { id: alunoId },
+      turma: { id: turmaId }
+    };
+    criar(payload, {
+      onSuccess: () => {
+        setAlunoId(null);  
+        setFiltro(""); 
+        alert("Aluno inscrito com sucesso!");
       },
+      onError: (err: any) => {
+        alert("Erro ao inscrever: " + (err?.message ?? "unknown"));
+      }
     });
   };
 
-  if (errorEfetuarInscricao) throw errorEfetuarInscricao;
-
   return (
-    <form autoComplete="off" onSubmit={handleSubmit(submit)}>
+    <div>
       <div className="row">
-        <div className="col-lg-6">
-          {inscricaoInvalido && (
-            <div className="alert alert-danger fw-bold" role="alert">
-              Inscricao inválido!
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="row mb-2">
-        <label htmlFor="conta" className="col-lg-1 fw-bold mb-2">
-          Conta
-        </label>
-        <div className="col-lg-5">
-          <input
-            {...register("conta")}
-            type="text"
-            id="conta"
-            className="form-control form-control-sm"
-          />
-        </div>
+        <div className="col-xl-4"><DisciplinaComboBox /></div>
+        <div className="col-xl-4"><TurmaComboBox /></div>
+        <div className="col-xl-4"><AlunoComboBox /></div>
       </div>
 
-      <div className="row mb-3">
-        <label htmlFor="senha" className="col-lg-1 fw-bold mb-2">
-          Senha
-        </label>
-        <div className="col-lg-5">
-          <input
-            {...register("senha")}
-            type="password"
-            id="senha"
-            className="form-control form-control-sm"
-          />
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="offset-lg-1 col-lg-5">
-          <button type="submit" className="btn btn-outline-success">
-            Entrar
+      <div className="row mt-3">
+        <div className="col-xl-12 d-flex">
+          <button className="btn btn-success btn-sm me-2" onClick={handleInscrever} disabled={isPending}>
+            Inscrever Aluno
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={() => { setAlunoId(null); setFiltro(""); }}>
+            Limpar Seleção
           </button>
         </div>
       </div>
-    </form>
+
+      <div className="row mt-4">
+        <div className="col-xl-12">
+          <TabelaDeAlunosPorTurma />
+        </div>
+      </div>
+    </div>
   );
-};
-export default InscricaoForm;
+}

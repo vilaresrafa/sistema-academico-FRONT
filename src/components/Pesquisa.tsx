@@ -1,5 +1,3 @@
-// interface Props {
-//     tratarPesquisa: (nome: string) => void;
 
 import _ from "lodash";
 import type { ChangeEvent } from "react";

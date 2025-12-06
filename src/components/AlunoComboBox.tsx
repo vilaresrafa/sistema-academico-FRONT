@@ -1,86 +1,95 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useInscricaoStore } from "../store/InscricaoStore";
-import { useRecuperarAlunosNaoInscritos } from "../hooks/useRecuperarAlunosNaoInscritos";
+import { useAlunosNaoInscritos } from "../hooks/useRecuperarAlunosNaoInscritos";
+import type { Aluno } from "../interfaces/Aluno";
 
-const AlunoComboBox = () => {
-  const turmaId = useInscricaoStore((s) => s.turmaId);     // <-- store CORRETO
+export default function AlunoComboBox() {
+  const turmaId = useInscricaoStore((s) => s.turmaId);
+  const alunoId = useInscricaoStore((s) => s.alunoId);
   const setAlunoId = useInscricaoStore((s) => s.setAlunoId);
+  const filtro = useInscricaoStore((s) => s.filtro);
+  const setFiltro = useInscricaoStore((s) => s.setFiltro);
 
-  const [pesquisa, setPesquisa] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [displayValue, setDisplayValue] = useState(""); 
+  const boxRef = useRef<HTMLDivElement>(null);
 
-  const caixaRef = useRef<HTMLDivElement>(null);
-
-  const { data: alunos = [] } = useRecuperarAlunosNaoInscritos(
-    turmaId ?? null,
-    pesquisa
-  );
+  const { data: alunos = [] } = useAlunosNaoInscritos(turmaId ?? null, filtro);
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (caixaRef.current && !caixaRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
+    const handler = (e: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
+        setOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const alunoSelecionado = alunos.find((a: Aluno) => a.id === alunoId);
+
+ 
+  useEffect(() => {
+    if (alunoSelecionado) {
+      setDisplayValue(alunoSelecionado.nome);
+    }
+  }, [alunoSelecionado]);
+
   return (
-    <div style={{ position: "relative" }} ref={caixaRef}>
+    <div ref={boxRef} style={{ position: "relative" }}>
+      <label className="fw-bold">Aluno</label>
+
       <input
-        type="text"
         className="form-control form-control-sm"
         placeholder={
-            turmaId
-            ? "Selecione um aluno"
-            : "Selecione uma turma primeiro..."
+          turmaId ? "Selecione um aluno" : "Selecione uma turma primeiro..."
         }
         disabled={!turmaId}
-        value={pesquisa}
+        value={open ? filtro : displayValue} 
         onChange={(e) => {
-            setPesquisa(e.target.value);
-            setIsOpen(true);
+          setFiltro(e.target.value);
+          setDisplayValue(e.target.value);
+          setOpen(true);
         }}
-        onFocus={() => setIsOpen(true)}   // <-- abre ao focar
-        onClick={() => setIsOpen(true)}   // <-- abre ao clicar
-        />
+        onClick={() => setOpen(true)}
+        onFocus={() => setOpen(true)}
+      />
 
-      {isOpen && alunos.length > 0 && (
+      {open && turmaId && alunos.length > 0 && (
         <ul
           className="list-group"
           style={{
             position: "absolute",
+            zIndex: 999,
             width: "100%",
-            zIndex: 10,
-            maxHeight: "200px",
+            maxHeight: 200,
             overflowY: "auto",
-            cursor: "pointer",
           }}
         >
-          {alunos.map((aluno: any) => (
+          {alunos.map((a: Aluno) => (
             <li
-              key={aluno.id}
+              key={a.id}
               className="list-group-item list-group-item-action"
-              onClick={() => {
-                setAlunoId(aluno.id);
-                setPesquisa(aluno.nome);
-                setIsOpen(false);
+              onMouseDown={() => {
+                setAlunoId(a.id);
+                setDisplayValue(a.nome);
+                setFiltro(""); 
+                setOpen(false);
               }}
             >
-              {aluno.nome}
+              {a.nome} — {a.email}
             </li>
           ))}
         </ul>
       )}
 
-      {isOpen && pesquisa.length > 0 && alunos.length === 0 && (
+      {open && filtro.length > 0 && turmaId && alunos.length === 0 && (
         <div
-          className="list-group-item"
+          className="list-group-item text-muted"
           style={{
             position: "absolute",
             width: "100%",
-            zIndex: 10,
+            zIndex: 999,
             background: "#fff",
           }}
         >
@@ -89,6 +98,4 @@ const AlunoComboBox = () => {
       )}
     </div>
   );
-};
-
-export default AlunoComboBox;
+}

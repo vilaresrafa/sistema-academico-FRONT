@@ -2,8 +2,6 @@ import { useState } from "react";
 import type { Aluno } from "../interfaces/Aluno";
 import Paginacao from "../components/Paginacao";
 import Pesquisa from "../components/Pesquisa";
-//import { useMutation } from "@tanstack/react-query";
-//import { queryClient } from "../main";
 import TabelaDeAlunos from "../components/TabelaDeAlunos";
 import useRecuperarAlunosComPaginacao from "../hooks/useRecuperarAlunoComPaginacao";
 import useRemoverAlunoPorId from "../hooks/useRemoverAlunoPorId";
@@ -23,7 +21,6 @@ const AlunosComPaginacaoPage = () => {
 
   const {
     mutate: removerAluno,
-    // isPending: removendoAluno,
     error: errorRemocaoAluno} = useRemoverAlunoPorId(); 
 
   const tratarRemocao = (id: number) => {
@@ -43,7 +40,6 @@ const AlunosComPaginacaoPage = () => {
   if (errorRecuperarAlunosComPaginacao) throw errorRecuperarAlunosComPaginacao;
   if (errorRemocaoAluno) throw errorRemocaoAluno;
   if (recuperandoAlunosComPaginacao) return <p>Recuperando alunos...</p>;
-  // if (removendoProduto) return <p>Removendo um produto...</p>;
 
   const alunos: Aluno[] = resultadoPaginado.itens;
   const totalDePaginas: number = resultadoPaginado.totalDePaginas;

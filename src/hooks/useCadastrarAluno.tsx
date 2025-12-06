@@ -6,27 +6,37 @@ const cadastrarAluno = async (aluno: Aluno) => {
   const response = await fetch("http://localhost:8080/alunos", {
     method: "POST",
     headers: {
-        "Content-type": "Application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(aluno)
+    body: JSON.stringify({
+      nome: aluno.nome,
+      slug: aluno.slug,
+      email: aluno.email,
+      // ❗ NÃO ENVIE TURMA AQUI
+      // turma: null
+      // turma: {}
+      // turma: aluno.turma
+    }),
   });
+
   if (!response.ok) {
-    throw new Error(
-      "Ocorreu um erro ao cadastrar um aluno. Status code: " + response.status
-    );
+    const erro = await response.text();
+    console.error("Erro ao cadastrar aluno:", erro);
+    throw new Error("Falha ao cadastrar aluno");
   }
-  return await response.json();
+
+  return response.json();
 };
 
 const useCadastrarAluno = () => {
   return useMutation({
-    mutationFn: (aluno: Aluno) => cadastrarAluno(aluno),
+    mutationFn: cadastrarAluno,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["alunos"],
-        exact: false
-      })      
-    }
+      });
+    },
   });
 };
+
 export default useCadastrarAluno;

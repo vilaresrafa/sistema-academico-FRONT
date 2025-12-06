@@ -50,6 +50,12 @@ const NavBar = () => {
                 Inscrição
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/cadastro-alunos">
+                <i className="bi me-1"></i>
+                Cadastro
+              </NavLink>
+            </li>
           </ul>
         </div>
       </div>
