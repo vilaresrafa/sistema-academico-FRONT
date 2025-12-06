@@ -10,8 +10,7 @@ export default function InscricaoForm() {
   const disciplinaId = useInscricaoStore(s => s.disciplinaId);
   const turmaId = useInscricaoStore(s => s.turmaId);
   const alunoId = useInscricaoStore(s => s.alunoId);
-  const setAlunoId = useInscricaoStore(s => s.setAlunoId);
-  const setFiltro = useInscricaoStore(s => s.setFiltro);
+  const reset = useInscricaoStore(s => s.reset);
 
   const { mutate: criar, isPending } = useCriarInscricao();
 
@@ -24,8 +23,7 @@ export default function InscricaoForm() {
     };
     criar(payload, {
       onSuccess: () => {
-        setAlunoId(null);  
-        setFiltro(""); 
+        reset();
         alert("Aluno inscrito com sucesso!");
       },
       onError: (err: any) => {
@@ -47,7 +45,7 @@ export default function InscricaoForm() {
           <button className="btn btn-success btn-sm me-2" onClick={handleInscrever} disabled={isPending}>
             Inscrever Aluno
           </button>
-          <button className="btn btn-secondary btn-sm" onClick={() => { setAlunoId(null); setFiltro(""); }}>
+          <button className="btn btn-secondary btn-sm" onClick={() => { reset(); }}>
             Limpar Seleção
           </button>
         </div>

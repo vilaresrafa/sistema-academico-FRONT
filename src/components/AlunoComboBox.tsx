@@ -9,6 +9,7 @@ export default function AlunoComboBox() {
   const setAlunoId = useInscricaoStore((s) => s.setAlunoId);
   const filtro = useInscricaoStore((s) => s.filtro);
   const setFiltro = useInscricaoStore((s) => s.setFiltro);
+  const reset = useInscricaoStore((s) => s.reset);
 
   const [open, setOpen] = useState(false);
   const [displayValue, setDisplayValue] = useState(""); 
@@ -25,6 +26,14 @@ export default function AlunoComboBox() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const exposedReset = () => {
+    reset();
+    setDisplayValue("");
+    setOpen(false);
+  };
+
+  (AlunoComboBox as any).reset = exposedReset;
 
   const alunoSelecionado = alunos.find((a: Aluno) => a.id === alunoId);
 

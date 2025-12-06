@@ -16,6 +16,7 @@ type InscricaoState = {
   setPagina: (p: number) => void;
 
   resetAluno: () => void;
+  reset: () => void;
 };
 
 export const useInscricaoStore = create<InscricaoState>((set) => ({
@@ -49,4 +50,13 @@ export const useInscricaoStore = create<InscricaoState>((set) => ({
   setPagina: (p) => set({ pagina: p }),
 
   resetAluno: () => set({ alunoId: null }),
+
+  reset: () =>
+    set({
+      disciplinaId: null,
+      turmaId: null,
+      alunoId: null,
+      filtro: "",
+      pagina: 0,
+    }),
 }));

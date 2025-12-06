@@ -5,6 +5,7 @@ import { useInscricaoStore } from "../store/InscricaoStore";
 export default function DisciplinaComboBox() {
   const setDisciplinaId = useInscricaoStore((s) => s.setDisciplinaId);
   const disciplinaId = useInscricaoStore((s) => s.disciplinaId);
+  const reset = useInscricaoStore((s) => s.reset);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -18,6 +19,14 @@ export default function DisciplinaComboBox() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const exposedReset = () => {
+    reset();
+    setQuery("");
+    setOpen(false);
+  };
+
+  (DisciplinaComboBox as any).reset = exposedReset;
 
   const filtered = disciplinas.filter((d) => d.nome.toLowerCase().includes(query.toLowerCase()));
 

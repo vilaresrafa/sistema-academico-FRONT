@@ -7,6 +7,7 @@ export default function TurmaComboBox() {
   const turmaId = useInscricaoStore((s) => s.turmaId);
   const setTurmaId = useInscricaoStore((s) => s.setTurmaId);
   const setAlunoId = useInscricaoStore((s) => s.setAlunoId);
+  const reset = useInscricaoStore((s) => s.reset);
 
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -26,6 +27,14 @@ export default function TurmaComboBox() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const exposedReset = () => {
+    reset();
+    setQuery("");
+    setOpen(false);
+  };
+
+  (TurmaComboBox as any).reset = exposedReset;
 
   if (!disciplinaId)
     return <p style={{ fontSize: 14 }}>Selecione uma disciplina primeiro</p>;
