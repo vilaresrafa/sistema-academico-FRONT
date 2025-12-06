@@ -1,19 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { endpoints } from "../util/api";
+import useApi from "./useApi";
 import type { Aluno } from "../interfaces/Aluno";
 
-const fetchAlunosNaoInscritos = async (turmaId: number, nome = ""): Promise<Aluno[]> => {
-  let url = `${endpoints.alunosNaoInscritos}?turmaId=${turmaId}`;
-  if (nome && nome.trim() !== "") url += `&nome=${encodeURIComponent(nome)}`;
-  const r = await fetch(url);
-  if (!r.ok) throw new Error("Erro ao carregar alunos não inscritos");
-  return r.json();
-};
-
-export const useAlunosNaoInscritos = (turmaId?: number | null, nome = "") =>
-  useQuery<Aluno[]>({
+export const useAlunosNaoInscritos = (turmaId?: number | null, nome = "") => {
+  const api = useApi();
+  return useQuery<Aluno[]>({
     queryKey: ["alunos-nao-inscritos", turmaId, nome],
-    queryFn: () => fetchAlunosNaoInscritos(turmaId!, nome),
+    queryFn: async () => {
+      const params: any = { turmaId };
+      if (nome && nome.trim() !== "") params.nome = nome;
+      const res = await api.get("/alunos/nao-inscritos", { params });
+      return res.data as Aluno[];
+    },
     enabled: turmaId != null && turmaId > 0,
-    staleTime: 10_000
+    staleTime: 10_000,
   });
+};

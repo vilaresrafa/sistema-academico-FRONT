@@ -1,25 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-
-const recuperarTurmas = async (nome?: string) => {
-  let url = "http://localhost:8080/turmas";
-  if (nome && nome.trim() !== "") {
-    url += `?nome=${encodeURIComponent(nome)}`;
-  }
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(
-      "Ocorreu um erro ao recuperar turmas. Status code: " + response.status
-    );
-  }
-
-  return await response.json();
-};
+import useApi from "./useApi";
 
 const useRecuperarTurmas = ({ nome = "" }: { nome?: string }) => {
+  const api = useApi();
+
   return useQuery({
     queryKey: ["turmas", nome],
-    queryFn: () => recuperarTurmas(nome),
+    queryFn: async () => {
+      const response = await api.get("/turmas", {
+        params: nome && nome.trim() !== "" ? { nome } : {},
+      });
+      return response.data;
+    },
     staleTime: 10_000,
   });
 };

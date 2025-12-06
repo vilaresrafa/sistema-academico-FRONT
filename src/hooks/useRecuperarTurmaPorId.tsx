@@ -1,22 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-
-const recuperarTurmaPorId = async (id: number) => {
-  const response = await fetch("http://localhost:8080/turmas/" + id);
-  if (!response.ok) {
-    throw new Error(
-      "Ocorreu um erro ao recuperar a turma com id = " +
-        id +
-        ". Status code: " +
-        response.status
-    );
-  }
-  return await response.json();
-};
+import useApi from "./useApi";
 
 const useRecuperarTurmaPorId = (id: number) => {
+  const api = useApi();
   return useQuery({
     queryKey: ["turmas", id],
-    queryFn: () => recuperarTurmaPorId(id),
+    queryFn: async () => {
+      const res = await api.get(`/turmas/${id}`);
+      return res.data;
+    },
     staleTime: 10_000,
   });
 };

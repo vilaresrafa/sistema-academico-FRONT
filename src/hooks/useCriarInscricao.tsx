@@ -1,6 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "../main";
-import { endpoints } from "../util/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useApi from "./useApi";
 
 type Payload = {
   dataHora: string;
@@ -8,24 +7,24 @@ type Payload = {
   turma: { id: number };
 };
 
-const criar = async (payload: Payload) => {
-  const r = await fetch(endpoints.inscricoes, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  if (!r.ok) {
-    const txt = await r.text();
-    throw new Error("Erro ao criar inscrição: " + txt);
-  }
-  return r.json();
+const criar = async (payload: Payload, api: any) => {
+  const r = await api.post("/inscricoes", payload);
+  return r.data;
 };
 
-export const useCriarInscricao = () =>
-  useMutation({
-    mutationFn: (payload: Payload) => criar(payload),
+export const useCriarInscricao = () => {
+  const api = useApi();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: Payload) => criar(payload, api),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["inscritos", variables.turma.id] });
-      queryClient.invalidateQueries({ queryKey: ["alunos-nao-inscritos", variables.turma.id] });
-    }
+      queryClient.invalidateQueries({
+        queryKey: ["inscritos", variables.turma.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["alunos-nao-inscritos", variables.turma.id],
+      });
+    },
   });
+};

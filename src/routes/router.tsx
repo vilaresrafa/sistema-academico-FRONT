@@ -4,13 +4,15 @@ import Layout from "./Layout";
 import ErrorPage from "../pages/ErrorPage";
 import TurmasPage from "../pages/TurmasPage";
 import TurmaPage from "../pages/TurmaPage";
-import CardsPorSlugTurma from "../components/CardsPorSlugTurma";
 import AlunosComPaginacaoPage from "../pages/AlunosComPaginacaoPage";
-import CardsPorSlugCategoriaPage from "../pages/CardsPorSlugDaTurmaPage";
 import CardsPorSlugDaTurmaPage from "../pages/CardsPorSlugDaTurmaPage";
 import GrupoPage from "../pages/GrupoPage";
 import CadastrarAlunoPage from "../pages/CadastrarAlunosPage";
 import InscricaoPage from "../pages/InscricaoPage";
+import LoginPage from "../pages/LoginPage";
+import RegisterPage from "../pages/RegisterPage";
+import ProtectedRoute from "./ProtectedRoute";
+import UserManagementPage from "../pages/UserManagementPage";
 
 const router = createBrowserRouter([
   {
@@ -18,19 +20,30 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
+      { path: "login", element: <LoginPage /> },
+      { path: "register", element: <RegisterPage /> },
       {
-        path: "", 
-        element: <HomePage />,
+        element: <ProtectedRoute />,
         children: [
-            {path: ":slugTurma?", element: <CardsPorSlugDaTurmaPage />}
-        ]
+          {
+            path: "",
+            element: <HomePage />,
+            children: [{ path: ":slugTurma?", element: <CardsPorSlugDaTurmaPage /> }],
+          },
+          { path: "listar-turmas", element: <TurmasPage /> },
+          { path: "listar-alunos", element: <AlunosComPaginacaoPage /> },
+          { path: "grupos", element: <GrupoPage /> },
+          { path: "inscricao-alunos", element: <InscricaoPage /> },
+          { path: "turmas/:id", element: <TurmaPage /> },
+        ],
       },
-      { path: "listar-turmas", element: <TurmasPage /> },
-      { path: "listar-alunos", element: <AlunosComPaginacaoPage />},
-      { path: "grupos", element: <GrupoPage/>},
-      { path: "cadastro-alunos", element: <CadastrarAlunoPage />},
-      { path: "inscricao-alunos", element: <InscricaoPage />},
-      { path: "turmas/:id", element: <TurmaPage /> },
+      {
+        element: <ProtectedRoute allowedRoles={["ADMIN"]} />,
+        children: [
+          { path: "cadastro-alunos", element: <CadastrarAlunoPage /> },
+          { path: "admin/user-management", element: <UserManagementPage /> },
+        ],
+      },
     ],
   },
 ]);

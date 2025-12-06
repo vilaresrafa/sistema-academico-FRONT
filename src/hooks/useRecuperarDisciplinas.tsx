@@ -1,19 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-
-const recuperarDisciplinas = async () => {
-  const response = await fetch("http://localhost:8080/disciplinas");
-  if (!response.ok) {
-    throw new Error(
-      "Ocorreu um erro ao recuperar disciplinas. Status code: " + response.status
-    );
-  }
-  return await response.json();
-};
+import useApi from "./useApi";
 
 const useRecuperarDisciplinas = () => {
+  const api = useApi();
   return useQuery({
     queryKey: ["disciplinas"],
-    queryFn: () => recuperarDisciplinas(),
+    queryFn: async () => {
+      const res = await api.get("/disciplinas");
+      return res.data;
+    },
     staleTime: 10_000,
   });
 };
