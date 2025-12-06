@@ -13,7 +13,6 @@ const removerAlunoPorId = async (id: number) => {
         response.status
     );
   }
-  // sem: return await response.json() pois o back-end retorna void.
 };
 
 const useRemoverAlunoPorId = () => {

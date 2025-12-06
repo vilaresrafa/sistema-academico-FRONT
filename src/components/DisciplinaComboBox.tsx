@@ -1,89 +1,44 @@
-import { useState, useEffect, useRef } from "react";
-import useRecuperarDisciplinas from "../hooks/useRecuperarDisciplinas";
+import React, { useState, useRef, useEffect } from "react";
+import { useDisciplinas } from "../hooks/useDisciplinas";
 import { useInscricaoStore } from "../store/InscricaoStore";
 
 export default function DisciplinaComboBox() {
-  const { data: disciplinas } = useRecuperarDisciplinas();
-
-  const disciplinaId = useInscricaoStore((s) => s.disciplinaId);
   const setDisciplinaId = useInscricaoStore((s) => s.setDisciplinaId);
+  const disciplinaId = useInscricaoStore((s) => s.disciplinaId);
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
 
-  const [inputValue, setInputValue] = useState("");
-  const [dropdownAberto, setDropdownAberto] = useState(false);
+  const { data: disciplinas = [], isLoading } = useDisciplinas();
 
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Quando seleciona disciplina via store, mostra o nome no input
   useEffect(() => {
-    if (disciplinaId && disciplinas) {
-      const d = disciplinas.find((x: { id: number; }) => x.id === disciplinaId);
-      if (d) setInputValue(d.nome);
-    }
-  }, [disciplinaId, disciplinas]);
-
-  // Fechar dropdown ao clicar fora
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setDropdownAberto(false);
-      }
+    const handler = (e: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  if (!disciplinas) return <input className="form-control form-control-sm" disabled />;
-
-  const filtradas = disciplinas.filter((d: any) =>
-    d.nome.toLowerCase().includes(inputValue.toLowerCase())
-  );
-
-  const selecionar = (disciplina: any) => {
-    setDisciplinaId(disciplina.id);
-    setInputValue(disciplina.nome);
-    setDropdownAberto(false);
-  };
+  const filtered = disciplinas.filter((d) => d.nome.toLowerCase().includes(query.toLowerCase()));
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
+    <div ref={boxRef} style={{ position: "relative" }}>
+      <label className="fw-bold">Disciplina</label>
       <input
-        type="text"
         className="form-control form-control-sm"
-        placeholder="Selecione uma disciplina"
-        value={inputValue}
-        onFocus={() => setDropdownAberto(true)}
-        onChange={(e) => {
-          setInputValue(e.target.value);
-          setDropdownAberto(true);
-          setDisciplinaId(null); // se digitar algo diferente, limpa seleção
-        }}
+        value={disciplinas.find(d => d.id === disciplinaId)?.nome ?? query}
+        placeholder={isLoading ? "Carregando..." : "Digite para filtrar disciplinas"}
+        onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
       />
-
-      {dropdownAberto && (
-        <ul
-          className="list-group"
-          style={{
-            position: "absolute",
-            width: "100%",
-            zIndex: 10,
-            maxHeight: "200px",
-            overflowY: "auto",
-          }}
-        >
-          {filtradas.length === 0 && (
-            <li className="list-group-item">Nenhuma disciplina encontrada</li>
-          )}
-
-          {filtradas.map((disciplina: any) => (
-            <li
-              key={disciplina.id}
-              className="list-group-item list-group-item-action"
-              style={{ cursor: "pointer" }}
-              onMouseDown={() => selecionar(disciplina)}
-            >
-              {disciplina.nome}
+      {open && (
+        <ul className="list-group" style={{ position: "absolute", zIndex: 999, width: "100%", maxHeight: 200, overflowY: "auto" }}>
+          {filtered.map(d => (
+            <li key={d.id} className="list-group-item list-group-item-action" onMouseDown={() => { setDisciplinaId(d.id); setOpen(false); }}>
+              {d.nome}
             </li>
           ))}
+          {filtered.length === 0 && <li className="list-group-item text-muted">Nenhuma disciplina</li>}
         </ul>
       )}
     </div>

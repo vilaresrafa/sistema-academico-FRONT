@@ -2,9 +2,6 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { ResultadoPaginado } from "../interfaces/ResultadoPaginado";
 import type { Aluno } from "../interfaces/Aluno";
 
-// const pessoa = {nome: "João Paulo", endereco: "Rua X n. 10"};
-// const empregado = {...pessoa, salario: 5000};  // spread
-
 const recuperarAlunosComPaginacao = async (queryString: QueryString): Promise<ResultadoPaginado<Aluno>> => {
   
   const response = await fetch(

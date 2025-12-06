@@ -1,56 +1,61 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useInscricaoStore } from "../store/InscricaoStore";
-import useRecuperarTurmasDisciplina from "../hooks/useRecuperarTurmasDisciplina";
+import { useTurmasPorDisciplina } from "../hooks/useTurmasPorDisciplina";
 
 export default function TurmaComboBox() {
   const disciplinaId = useInscricaoStore((s) => s.disciplinaId);
   const turmaId = useInscricaoStore((s) => s.turmaId);
   const setTurmaId = useInscricaoStore((s) => s.setTurmaId);
+  const setAlunoId = useInscricaoStore((s) => s.setAlunoId);
 
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
-
-  // Fecha dropdown quando clicar fora
   const boxRef = useRef<HTMLDivElement>(null);
+
+  const { data: turmas = [], isLoading } = useTurmasPorDisciplina({
+    disciplinaId,
+    nome: query,
+  });
+
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
+    const handler = (e: MouseEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const { data: turmas, isLoading } = useRecuperarTurmasDisciplina({
-    nome: query,
-    disciplinaId,
-  });
-
-  if (!disciplinaId) {
+  if (!disciplinaId)
     return <p style={{ fontSize: 14 }}>Selecione uma disciplina primeiro</p>;
-  }
 
-  const turmaSelecionada = turmas?.find((t: any) => t.id === turmaId);
+  const turmaSelecionada = turmas.find((t) => t.id === turmaId);
+
+  const inputText = turmaSelecionada ? turmaSelecionada.nome : query;
 
   return (
-    <div style={{ position: "relative" }} ref={boxRef}>
+    <div ref={boxRef} style={{ position: "relative" }}>
       <label className="fw-bold">Turma</label>
-
-      {/* Input */}
       <input
-        type="text"
         className="form-control form-control-sm"
-        value={turmaSelecionada ? turmaSelecionada.nome : query}
-        placeholder={isLoading ? "Carregando turmas..." : "Digite para filtrar turmas"}
+        value={inputText}
+        placeholder={
+          isLoading ? "Carregando turmas..." : "Digite para filtrar turmas"
+        }
         onChange={(e) => {
-          setQuery(e.target.value);
+          const text = e.target.value;
+          setQuery(text);
           setOpen(true);
+
+          if (text === "") {
+            setTurmaId(null);
+            setAlunoId(null);
+          }
         }}
         onFocus={() => setOpen(true)}
       />
 
-      {/* Dropdown */}
       {open && (
         <ul
           className="list-group"
@@ -58,27 +63,26 @@ export default function TurmaComboBox() {
             position: "absolute",
             zIndex: 999,
             width: "100%",
-            maxHeight: "200px",
+            maxHeight: 200,
             overflowY: "auto",
-            cursor: "pointer",
           }}
         >
-          {(turmas ?? []).map((t: any) => (
+          {(turmas ?? []).map((t) => (
             <li
               key={t.id}
               className="list-group-item list-group-item-action"
               onMouseDown={() => {
-                // mouseDown evita o blur antes do click
                 setQuery(t.nome);
-                setTurmaId(t.id);
+                setTurmaId(t.id); 
+                setAlunoId(null);
                 setOpen(false);
               }}
             >
-              {t.nome}
+              {t.nome} — {t.ano} {t.periodo}
             </li>
           ))}
 
-          {turmas?.length === 0 && !isLoading && (
+          {turmas.length === 0 && !isLoading && (
             <li className="list-group-item text-muted small">
               Nenhuma turma encontrada
             </li>

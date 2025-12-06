@@ -29,28 +29,23 @@ const GrupoPage = () => {
     return () => document.removeEventListener("mousedown", handleClickFora);
   }, []);
 
-  // Campo de texto
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNome(e.target.value);
     setMostrarDropdown(true);
   };
 
-  // Seleciona turma
   const handleSelecionar = (slugTurma: string) => {
     setTurmaSelecionada(slugTurma);
     setNome(slugTurma);
     setMostrarDropdown(false);
   };
 
-  // Filtro de turmas
   const turmasFiltradas = turmas?.filter((turma: any) =>
     turma.nome.toLowerCase().includes(nome.toLowerCase())
   );
 
-  // Controle de grupos no localStorage
   const [grupoAlunos, setGrupoAlunos] = useState<{ [key: string]: any[] }>({});
 
-  // Carregar dados salvos
   useEffect(() => {
     const dadosSalvos = localStorage.getItem("gruposTurmas");
     if (dadosSalvos) {
@@ -58,12 +53,10 @@ const GrupoPage = () => {
     }
   }, []);
 
-  // Atualizar localStorage sempre que mudar
   useEffect(() => {
     localStorage.setItem("gruposTurmas", JSON.stringify(grupoAlunos));
   }, [grupoAlunos]);
 
-  // Adicionar ou remover aluno
   const handleIncluirRemover = (aluno: any) => {
     setGrupoAlunos((prev) => {
       const grupoAtual = prev[turmaSelecionada] || [];
@@ -83,7 +76,6 @@ const GrupoPage = () => {
     <div style={{ padding: "20px", maxWidth: "10000px" }}>
       <h2>Selecione uma turma</h2>
 
-      {/* Campo com dropdown personalizado */}
       <div ref={dropdownRef} style={{ position: "relative", width: "100%" }}>
         <input
           type="text"
@@ -144,14 +136,12 @@ const GrupoPage = () => {
         )}
       </div>
 
-      {/* Turma selecionada */}
       {turmaSelecionada && (
         <h3 style={{ marginTop: "20px" }}>
           Alunos da turma <strong>{turmaSelecionada}</strong>
         </h3>
       )}
 
-      {/* Exibe os alunos apenas se uma turma estiver selecionada */}
 {turmaSelecionada && (
   <>
     {carregandoAlunos ? (

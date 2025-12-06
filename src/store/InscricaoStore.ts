@@ -1,19 +1,20 @@
-// src/store/inscricaoStore.ts
+// src/store/InscricaoStore.ts
 import { create } from "zustand";
 
 type InscricaoState = {
   disciplinaId: number | null;
   turmaId: number | null;
   alunoId: number | null;
-  filtro: string; // usado pela Pesquisa
+  filtro: string;
+  pagina: number;
 
-  // setters
+
   setDisciplinaId: (id: number | null) => void;
   setTurmaId: (id: number | null) => void;
   setAlunoId: (id: number | null) => void;
   setFiltro: (f: string) => void;
+  setPagina: (p: number) => void;
 
-  // função utilitária usada pelo InscricaoForm ao inscrever um aluno
   resetAluno: () => void;
 };
 
@@ -22,26 +23,30 @@ export const useInscricaoStore = create<InscricaoState>((set) => ({
   turmaId: null,
   alunoId: null,
   filtro: "",
+  pagina: 0,
 
   setDisciplinaId: (id) =>
     set(() => ({
       disciplinaId: id,
-      // se mudar disciplina → limpa tudo que depende dela
       turmaId: null,
       alunoId: null,
       filtro: "",
+      pagina: 0,
     })),
 
   setTurmaId: (id) =>
     set(() => ({
       turmaId: id,
-      // se mudar turma → limpa aluno selecionado e filtro
       alunoId: null,
       filtro: "",
+      pagina: 0,
     })),
 
   setAlunoId: (id) => set({ alunoId: id }),
-  setFiltro: (f) => set({ filtro: f }),
+
+  setFiltro: (f) => set({ filtro: f, pagina: 0 }),
+
+  setPagina: (p) => set({ pagina: p }),
 
   resetAluno: () => set({ alunoId: null }),
 }));
