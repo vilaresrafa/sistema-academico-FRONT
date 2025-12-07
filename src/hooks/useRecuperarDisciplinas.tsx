@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import useApi from "./useApi";
+import type { Disciplina } from "../interfaces/Disciplina";
 
 const useRecuperarDisciplinas = () => {
-  const api = useApi();
+  const api = useApi<Disciplina>("/disciplinas");
   return useQuery({
     queryKey: ["disciplinas"],
     queryFn: async () => {
-      const res = await api.get("/disciplinas");
-      return res.data;
+      return await api.listar();
     },
     staleTime: 10_000,
   });

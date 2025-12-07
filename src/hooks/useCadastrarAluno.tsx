@@ -3,7 +3,7 @@ import type { Aluno } from "../interfaces/Aluno";
 import useApi from "./useApi";
 
 const useCadastrarAluno = () => {
-  const api = useApi();
+  const api = useApi<Aluno>("/alunos");
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -16,7 +16,7 @@ const useCadastrarAluno = () => {
       if (aluno.turma && (aluno.turma as any).id) {
         body.turma = { id: (aluno.turma as any).id };
       }
-      return api.post("/alunos", body).then((response) => response.data);
+      return api.criar(body);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

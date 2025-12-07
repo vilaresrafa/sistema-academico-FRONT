@@ -24,7 +24,7 @@ const UserManagementPage: React.FC = () => {
     resolver: zodResolver(userSchema),
   });
 
-  const api = useApi();
+  const api = useApi<any>("/auth/register");
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -32,15 +32,16 @@ const UserManagementPage: React.FC = () => {
       const body: any = {
         nome: newUser.nome,
         email: newUser.email,
-        // backend expects Portuguese field name 'senha'
         senha: newUser.password,
       };
       if (newUser.role) {
-        // include both forms to maximize compatibility: single role and roles array
         body.role = newUser.role;
         body.roles = [newUser.role];
+        body.authorities = [newUser.role];
+        body.roleObjects = [{ name: newUser.role }];
+        body.roles_prefixed = [`ROLE_${newUser.role}`];
       }
-      return api.post("/auth/register", body).then((res) => res.data);
+      return api.criar(body);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -98,8 +99,8 @@ const UserManagementPage: React.FC = () => {
             <p className="error-message">{errors.role.message}</p>
           )}
         </div>
-        <button type="submit" disabled={mutation.isLoading}>
-          {mutation.isLoading ? "Cadastrando..." : "Cadastrar Usuário"}
+        <button type="submit" disabled={mutation.isPending}>
+          {mutation.isPending ? "Cadastrando..." : "Cadastrar Usuário"}
         </button>
       </form>
     </div>

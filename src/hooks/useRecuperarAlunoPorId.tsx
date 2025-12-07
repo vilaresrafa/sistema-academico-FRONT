@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import useApi from "./useApi";
+import type { Aluno } from "../interfaces/Aluno";
 
 const useRecuperarAlunoPorId = (id: number, removido: boolean = false) => {
-  const api = useApi();
+  const api = useApi<Aluno>("/alunos");
   return useQuery({
     queryKey: ["alunos", id],
     queryFn: async () => {
-      const res = await api.get(`/alunos/${id}`);
-      return res.data;
+      return await api.recuperar(id);
     },
     enabled: !removido,
   });

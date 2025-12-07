@@ -9,7 +9,7 @@ export const useTurmasPorDisciplina = ({
   disciplinaId?: number | null;
   nome?: string;
 }) => {
-  const api = useApi();
+  const api = useApi<Turma>("/turmas");
 
   return useQuery<Turma[]>({
     queryKey: ["turmas", disciplinaId, nome],
@@ -17,8 +17,7 @@ export const useTurmasPorDisciplina = ({
       const params: any = {};
       if (nome && nome.trim() !== "") params.nome = nome;
       if (disciplinaId) params.disciplinaId = disciplinaId;
-      const res = await api.get("/turmas", { params });
-      return res.data as Turma[];
+      return await api.listar(params);
     },
     enabled: disciplinaId != null && disciplinaId > 0,
     staleTime: 10_000,

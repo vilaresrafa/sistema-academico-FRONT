@@ -3,13 +3,12 @@ import type { Aluno } from "../interfaces/Aluno";
 import useApi from "./useApi";
 
 const useRecuperarAlunosPorSlugTurma = (slugTurma?: string) => {
-  const api = useApi();
+  const endpoint = slugTurma ? `/alunos/turmas/${slugTurma}` : "/alunos";
+  const api = useApi<Aluno>(endpoint);
   return useQuery({
     queryKey: slugTurma ? ["alunos", slugTurma] : ["alunos"],
     queryFn: async () => {
-      const path = slugTurma ? `/alunos/turmas/${slugTurma}` : `/alunos`;
-      const res = await api.get(path);
-      return res.data as Aluno[];
+      return await api.listar();
     },
     staleTime: 5_000,
   });

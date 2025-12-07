@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useApi from "./useApi";
+import type { Inscricao } from "../interfaces/Inscricao";
 
 type Payload = {
   dataHora: string;
@@ -7,17 +8,12 @@ type Payload = {
   turma: { id: number };
 };
 
-const criar = async (payload: Payload, api: any) => {
-  const r = await api.post("/inscricoes", payload);
-  return r.data;
-};
-
 export const useCriarInscricao = () => {
-  const api = useApi();
+  const api = useApi<Inscricao>("/inscricoes");
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: Payload) => criar(payload, api),
+    mutationFn: (payload: Payload) => api.criar(payload),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["inscritos", variables.turma.id],

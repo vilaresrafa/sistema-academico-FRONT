@@ -67,7 +67,7 @@ const useAuthStore = create<AuthState>()(
 
           if (!token) throw new Error("Token inválido recebido");
 
-          // Decodifica token uma vez, extrai roles (se houver) e atualiza o estado.
+          // Decodifica token uma vez, extrai roles (se houver) e atualiza o estado
           let decoded: any = {};
           try {
             decoded = jwtDecode(token as string);
@@ -197,7 +197,7 @@ const useAuthStore = create<AuthState>()(
 
 export default useAuthStore;
 
-// Rehydrate on load: if there's a persisted token, populate basic user and try /auth/me
+
 if (typeof window !== "undefined") {
   try {
     const raw = localStorage.getItem("auth-storage");
@@ -262,7 +262,7 @@ if (typeof window !== "undefined") {
   } catch {}
 }
 
-// Dev shortcut: expose the store on window for debugging
+
 try {
   if (
     typeof window !== "undefined" &&
@@ -271,8 +271,7 @@ try {
     (window as any).useAuthStore = useAuthStore;
   }
 } catch {}
-// Rehydrate helper: se houver um token persistido mas o store não estiver marcado como autenticado,
-// decodifica o token e popula `user` + `isAuthenticated` para manter a UI consistente após reload.
+
 if (typeof window !== "undefined") {
   try {
     const raw = localStorage.getItem("auth-storage");

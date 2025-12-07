@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import useApi from "./useApi";
+import type { Turma } from "../interfaces/Turma";
 
 const useRecuperarTurmaPorId = (id: number) => {
-  const api = useApi();
+  const api = useApi<Turma>("/turmas");
   return useQuery({
     queryKey: ["turmas", id],
     queryFn: async () => {
-      const res = await api.get(`/turmas/${id}`);
-      return res.data;
+      return await api.recuperar(id);
     },
     staleTime: 10_000,
   });

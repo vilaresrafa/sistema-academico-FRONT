@@ -62,8 +62,8 @@ const LoginPage: React.FC = () => {
             <p className="error-message">{errors.password.message}</p>
           )}
         </div>
-        <button type="submit" disabled={mutation.isLoading}>
-          {mutation.isLoading ? "Entrando..." : "Entrar"}
+        <button type="submit" disabled={mutation.isPending}>
+          {mutation.isPending ? "Entrando..." : "Entrar"}
         </button>
         <p>
           Não tem uma conta? <Link to="/register">Cadastre-se</Link>

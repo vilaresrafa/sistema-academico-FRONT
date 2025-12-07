@@ -3,12 +3,11 @@ import useApi from "./useApi";
 import type { Disciplina } from "../interfaces/Disciplina";
 
 export const useDisciplinas = () => {
-  const api = useApi();
+  const api = useApi<Disciplina>("/disciplinas");
   return useQuery<Disciplina[]>({
     queryKey: ["disciplinas"],
     queryFn: async () => {
-      const res = await api.get("/disciplinas");
-      return res.data as Disciplina[];
+      return await api.listar();
     },
     staleTime: 10_000,
   });

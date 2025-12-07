@@ -3,12 +3,11 @@ import type { Aluno } from "../interfaces/Aluno";
 import useApi from "./useApi";
 
 const useAtualizarAluno = () => {
-  const api = useApi();
+  const api = useApi<Aluno>("/alunos");
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (aluno: Aluno) =>
-      api.put(`/alunos/${aluno.id}`, aluno).then((response) => response.data),
+    mutationFn: (aluno: Aluno) => api.alterar(aluno, (aluno as any).id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alunos"], exact: false });
     },

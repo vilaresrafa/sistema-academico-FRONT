@@ -39,7 +39,6 @@ const AlunoForm: React.FC = () => {
     alunoSelecionado?.turma?.id ?? null
   );
 
-  // 🔥 Corrigido: alunoSelecionado pode ser null
   useEffect(() => {
     if (alunoSelecionado?.id) {
       setValue("nome", alunoSelecionado.nome ?? "");
